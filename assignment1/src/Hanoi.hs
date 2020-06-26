@@ -16,7 +16,16 @@ hanoi n a b c = hanoi (n - 1) a c b
                 ++
                 hanoi (n - 1) c b a
 
+-- move discs from peg 1 to peg 2 using peg3 and 4 as auxilaries
 hanoi4 :: Integer -> Peg -> Peg -> Peg -> Peg -> [Move]
 hanoi4 0 _ _ _ _ = []
-hanoi4 1 _ _ _ _ = 
-hanoi4 n a b c d = undefined
+hanoi4 1 a b _ _ = [(a, b)]
+hanoi4 n a b c d =
+    --transfer the top k disks to a single peg other than the start or destination pegs
+    hanoi4 k a c b d ++
+    -- Without disturbing the peg that now contains the top k disks, transfer the remaining n-k disks to the destination peg
+    hanoi (n - k) a b d ++
+    -- Finally, transfer the top k disks to the destination peg
+    hanoi4 k c b a d
+    -- optimal k, from wikipedia
+    where k = n - (round (sqrt (fromIntegral (2 * n + 1)))) + 1
