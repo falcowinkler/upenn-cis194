@@ -5,6 +5,7 @@ module Log where
 import Control.Applicative
 import Data.Char
 import Text.Read
+import Test.QuickCheck
 
 data MessageType = Info
                  | Warning
@@ -81,3 +82,11 @@ parseMessage s = case maybeParseMessage s of
 
 parseFile :: String -> [LogMessage]
 parseFile s = map parseMessage (lines s)
+
+
+insert :: LogMessage -> MessageTree -> MessageTree
+insert (Unknown _) tree = tree
+insert msg Leaf = Node Leaf msg Leaf
+insert msg@(LogMessage _ tsi _) (Node left x@(LogMessage _ ts _) right)
+  | tsi < ts = Node (insert msg left) x right
+  | otherwise = Node left x (insert msg right)

@@ -5,7 +5,7 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "validate" $ do 
+  describe "validate" $ do
     it "123 is not valid" $ do
       validate 123 `shouldBe` False
     it "1 is not valid" $ do
