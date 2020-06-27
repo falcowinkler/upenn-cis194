@@ -3,7 +3,7 @@ module LogSpec where
 import Log
 import Test.Hspec
 import Test.QuickCheck
-
+import Test.QuickCheck.Modifiers
 
 instance Arbitrary MessageType where
   arbitrary = do
@@ -23,6 +23,11 @@ instance Arbitrary MessageTree where
     left <- arbitrary
     right <- arbitrary
     elements [Leaf, Node left logMessage right]
+
+sorted :: Ord a => [a] -> Bool
+sorted [] = True
+sorted [x] = True
+sorted (a:b:xs) = a <= b && sorted (b:xs)
 
 spec :: Spec
 spec = do
@@ -78,3 +83,33 @@ spec = do
             Node
             Leaf (LogMessage Warning 2 "blubb") Leaf
           )
+  describe "it builds trees from log messages" $ do
+    it "parses three messages" $ do
+      build [ LogMessage Info 28 "la la la",
+          LogMessage (Error 1) 123 "explosion",
+          LogMessage Warning 5 "warning"
+        ] `shouldBe`
+        Node
+        (
+          Node
+          Leaf
+          (LogMessage Warning 5 "warning")
+          Leaf
+        )
+        (LogMessage Info 28 "la la la")
+        (
+          Node
+          Leaf
+          (LogMessage (Error 1) 123 "explosion")
+          Leaf
+        )
+
+  describe "building sorted lists from trees" $ do
+    it "passes random tests" $ do
+      let getTimestamp = \(LogMessage _ ts _) -> ts in
+        let prop = (\messages -> sorted (map getTimestamp (inOrder (build messages)))) in
+          quickCheck prop
+  describe "the whole thing should work for the example in the assignment" $ do
+    it "works" $ do
+      x <- testWhatWentWrong parseFile whatWentWrong "sample.log"
+      x `shouldBe` ["Way too many pickles","Bad pickle-flange interaction detected","Flange failed!"]

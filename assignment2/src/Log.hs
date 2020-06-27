@@ -90,3 +90,27 @@ insert msg Leaf = Node Leaf msg Leaf
 insert msg@(LogMessage _ tsi _) (Node left x@(LogMessage _ ts _) right)
   | tsi < ts = Node (insert msg left) x right
   | otherwise = Node left x (insert msg right)
+
+
+build :: [LogMessage] -> MessageTree
+build xs = go xs Leaf
+  where
+    go (x:xs) tree = go xs (insert x tree)
+    go [] tree = tree
+
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node left x right) = inOrder left ++ [x] ++ inOrder right
+
+
+sortMessages :: [LogMessage] -> [LogMessage]
+sortMessages = inOrder . build
+
+isSevereError :: LogMessage -> Bool
+isSevereError (LogMessage (Error severity) _ _) = severity >= 50
+isSevereError _ = False
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong = map getMessage . sortMessages . filter isSevereError
+  where
+    getMessage (LogMessage _ _ s) = s
