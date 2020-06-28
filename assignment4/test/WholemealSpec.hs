@@ -2,9 +2,6 @@ module WholemealSpec where
 import Wholemeal
 import Test.Hspec
 import Test.QuickCheck
-import Debug.Trace
-
-
 
 propFunc2 :: Positive Integer -> Bool
 propFunc2 x = fun2' (getPositive x) == fun2 (getPositive x)

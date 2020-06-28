@@ -2,6 +2,7 @@ module TreeFoldsSpec where
 import TreeFolds
 import Test.Hspec
 import Test.QuickCheck
+import Test.Hspec.Core.QuickCheck (modifyMaxSize)
 
 isBalancedTree :: Tree a -> Bool
 isBalancedTree Leaf = True
@@ -33,7 +34,8 @@ spec = do
   describe "tree folds" $ do
     it "works for sample tests" $ do
       isBalancedTree $ foldTree [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    it "result is a balanced subtree for some integer lists" $ property $
+    modifyMaxSize (const 200) $
+      it "result is a balanced subtree for some integer lists" $ property $
       prop_foldBalancedInts
-    it "result is a balanced subtree for some string lists" $ property $
+    modifyMaxSize (const 200) $ it "result is a balanced subtree for some string lists" $ property $
       prop_foldBalancedInts

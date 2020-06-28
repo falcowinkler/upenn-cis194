@@ -1,5 +1,4 @@
 module TreeFolds where
-import Data.List hiding (insert)
 
 data Tree a = Leaf
   | Node Integer (Tree a) a (Tree a) deriving (Show, Eq)
