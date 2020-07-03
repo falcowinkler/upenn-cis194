@@ -7,6 +7,8 @@ import Calculator (Expr, lit, add, mul)
 class HasVars a where
   var :: String -> a
 
+
+-- don't really see why we need VarExprT?
 data VarExprT = Lit Integer
   | Add VarExprT VarExprT
   | Mul VarExprT VarExprT
@@ -28,7 +30,6 @@ instance HasVars (M.Map String Integer -> Maybe Integer) where
 --   lit :: Integer -> a
 --   add :: a -> a -> a
 --   mul :: a -> a -> a
-
 
 instance Expr (M.Map String Integer -> Maybe Integer) where
   lit a m = Just a
