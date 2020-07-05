@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 module EditorBuffer where
 import Buffer
+import Editor
 import JoinList
 import Scrabble
 import Sized
@@ -28,20 +29,19 @@ instance Buffer (JoinList (Score, Size) String) where
 
   -- | Extract the nth line (0-indexed) from a buffer.  Return Nothing
   -- for out-of-bounds indices.
-  line :: Int -> b -> Maybe String
-  line = undefined
+  line = indexJ
   -- | @replaceLine n ln buf@ returns a modified version of @buf@,
   --   with the @n@th line replaced by @ln@.  If the index is
   --   out-of-bounds, the buffer should be returned unmodified.
-  replaceLine :: Int -> String -> b -> b
-  replaceLine = undefined
+  replaceLine n s tree = takeJ n tree +++ fromString s +++ dropJ (succ n) tree
 
   -- | Compute the number of lines in the buffer.
-  numLines :: b -> Int
-  numLines = undefined
+  numLines = getSize . snd . tag
 
   -- | Compute the value of the buffer, i.e. the amount someone would
   --   be paid for publishing the contents of the buffer.
-  value :: b -> Int
-  value = undefined
+  value = getScore . fst . tag
 
+-- what's the number next to the cursor
+-- if it's the score, then there might still be a bug, becaue it sometimes grows more than it shold
+main = runEditor editor (fromString "test" :: (JoinList (Score, Size) String))

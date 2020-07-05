@@ -28,4 +28,4 @@ instance Monoid Score where
   mappend (Score a) (Score b) = Score $ a + b
 
 scoreString :: String -> Score
-scoreString = foldl' mappend mempty . map score . map toUpper
+scoreString = mconcat . map score . map toUpper
