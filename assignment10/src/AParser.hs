@@ -70,8 +70,11 @@ instance Applicative Parser where
 type Name = String
 data Employee = Emp { name :: Name, phone :: String }
 
+pair :: Applicative f => f a -> f b -> f (a, b)
+pair = liftA2 (,)
+
 abParser :: Parser (Char, Char)
-abParser =  (\a b -> (a, b)) <$> pa <*> pb
+abParser =  pair pa pb
   where
     pa = satisfy (== 'a')
     pb = satisfy (== 'b')
